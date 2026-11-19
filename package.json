@@ -1,0 +1,49 @@
+{
+  "name": "uichanges",
+  "version": "0.0.1",
+  "description": "Find what changed in your web UI between versions and explain it to users, right on the page.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "uichanges": "./bin/uichanges.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./node": "./src/node.js",
+    "./capture": "./src/capture.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "example": "node bin/uichanges.js snapshot examples/shop-v1.html --screen catalog -o examples/v1.json && node bin/uichanges.js snapshot examples/shop-v2.html --screen catalog -o examples/v2.json && node bin/uichanges.js diff examples/v1.json examples/v2.json"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.40"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "ui",
+    "changelog",
+    "whats-new",
+    "onboarding",
+    "product-tour",
+    "diff",
+    "accessibility-tree"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uichanges/uichanges.git"
+  },
+  "homepage": "https://github.com/uichanges/uichanges#readme",
+  "bugs": "https://github.com/uichanges/uichanges/issues"
+}

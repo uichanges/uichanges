@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>uichanges — демо</title>
+<link rel="stylesheet" href="shop.css">
+<style>.demo-reset{position:fixed;left:16px;bottom:16px;font:13px system-ui;padding:6px 10px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}</style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Магазин</a>
+    <input type="search" placeholder="Поиск товаров">
+    <button>Сравнить товары</button>
+    <a href="/cart">Корзина</a>
+    <button data-testid="login">Вход</button>
+  </header>
+
+  <div class="layout">
+    <aside aria-label="Профиль">
+      <nav>
+        <a href="/orders">Мои заказы</a>
+        <a href="/favorites">Избранное</a>
+      </nav>
+    </aside>
+
+    <main>
+      <h1>Каталог</h1>
+      <button>Фильтры</button>
+      <div class="grid">
+        <article><h2>Чайник</h2><p>2 990 ₽</p><button>В корзину</button></article>
+        <article><h2>Кофемолка</h2><p>4 490 ₽</p><button>В корзину</button></article>
+        <article><h2>Тостер</h2><p>3 290 ₽</p><button>В корзину</button></article>
+        <article><h2>Блендер</h2><p>5 990 ₽</p><button>В корзину</button></article>
+      </div>
+      <section class="promo" data-uichanges-ignore>
+        <a href="/promo/456">Скидка 15% на кофемолки</a>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <a href="/help">Помощь</a>
+    <a href="/contacts">Контакты</a>
+  </footer>
+  <button class="demo-reset" onclick="uichanges.reset(); location.reload()">Показать подсказки заново</button>
+  <script src="/dist/uichanges.js" data-manifest="/uichanges.json" data-auto-open data-show-on-first-visit defer></script>
+</body>
+</html>

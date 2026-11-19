@@ -24,8 +24,16 @@ export function cmdInit(args) {
   out('  3. Commit .uichanges/ to git.');
 }
 
-export async function cmdCapture(args) {
-  const root = requireRoot();
+/**
+ * Snapshots every screen from the config. A screen without a baseline gets
+ * one; the others go to current/ for comparison. Used by `capture` and by
+ * the review panel's "Update snapshots" button.
+ *
+ * @param {string} root
+ * @param {{ storageState?: string, width?: number, ignore?: string[], waitFor?: string, delay?: number }} [args]
+ * @param {(line: { file: string, isNew: boolean, elements: number }) => void} [onScreen]
+ */
+export async function captureAll(root, args = {}, onScreen = () => {}) {
   const config = loadConfig(root);
   const p = paths(root);
   const { openBrowser, capturePage } = await import('./snapshot.js');
@@ -42,7 +50,7 @@ export async function cmdCapture(args) {
         const snapshot = await capturePage(browser, screen.url, {
           width,
           screen: screen.name,
-          ignore: [...(config.ignore || []), ...(screen.ignore || []), ...args.ignore],
+          ignore: [...(config.ignore || []), ...(screen.ignore || []), ...(args.ignore || [])],
           storageState,
           waitFor: screen.waitFor || args.waitFor,
           delay: screen.delay || args.delay,
@@ -50,12 +58,20 @@ export async function cmdCapture(args) {
         const isNew = !existsSync(join(p.baseline, file));
         writeSnapshot(isNew ? p.baseline : p.current, file, snapshot);
         if (isNew) created++; else captured++;
-        out(`  ${isNew ? green('baseline') : cyan('captured')}  ${file}  ${dim(`${snapshot.elements.length} elements`)}`);
+        onScreen({ file, isNew, elements: snapshot.elements.length });
       }
     }
   } finally {
     await browser.close();
   }
+  return { created, captured };
+}
+
+export async function cmdCapture(args) {
+  const root = requireRoot();
+  const { created, captured } = await captureAll(root, args, ({ file, isNew, elements }) => {
+    out(`  ${isNew ? green('baseline') : cyan('captured')}  ${file}  ${dim(`${elements} elements`)}`);
+  });
   out('');
   if (created) out(`${created} baseline snapshot(s) created. Commit them; next captures will be compared to them.`);
   if (captured) out('Run `uichanges status` to see what changed.');
@@ -164,4 +180,25 @@ export function cmdBuild(args) {
   const { target, manifest, warnings } = buildManifest(root, args.out);
   for (const w of warnings) process.stderr.write(`${yellow('warning')} ${w}\n`);
   out(`${green('Built')} ${rel(root, target)}  ${dim(`${manifest.changes.length} change(s)`)}`);
+}
+
+export async function cmdReview(args) {
+  const root = requireRoot();
+  const config = loadConfig(root);
+  const { startReviewServer, reviewLink } = await import('./review-server.js');
+  const { port, token } = await startReviewServer(root, {
+    port: args.port,
+    log: (s) => out(dim(`  ${new Date().toLocaleTimeString()}  ${s}`)),
+  });
+  out(bold('uichanges review'));
+  out('');
+  out('Open your site with one of these links (the app must be running):');
+  for (const screen of config.screens) {
+    if (!/^https?:/.test(screen.url)) continue;
+    out(`  ${screen.name.padEnd(12)} ${cyan(reviewLink(screen.url, port, token))}`);
+  }
+  out('');
+  out(`Changed elements are highlighted; describe them in the panel on the right.`);
+  out(dim(`Descriptions are saved to .uichanges/changes/ and the manifest is rebuilt on every save.`));
+  out(dim('Press Ctrl+C to stop.'));
 }

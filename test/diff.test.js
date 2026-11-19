@@ -169,3 +169,29 @@ test('helpers', () => {
   assert.equal(stringSimilarity('', 'abc'), 0);
   assert.equal(slugify('Сравнить товары!'), 'sravnit-tovary');
 });
+
+test('user data in a name (data-uichanges-dynamic) is not a rename', () => {
+  const r = diffSnapshots(
+    snap([el('button', 'Группа: не указана изменить', 273, 689, { dynamic: true })]),
+    snap([el('button', 'Группа: 3ПИ41 изменить', 273, 689, { dynamic: true })]),
+  );
+  assert.equal(r.changes.length, 0);
+  assert.equal(r.stats.unchanged, 1);
+});
+
+test('user data marked in the config by CSS path is not a rename either', () => {
+  const css = 'body > main > form > button:nth-of-type(1)';
+  const before = snap([el('button', 'Группа: не указана изменить', 273, 689, { locators: [css] })]);
+  const after = snap([el('button', 'Группа: 3ПИ41 изменить', 273, 689, { locators: [css] })]);
+  assert.equal(diffSnapshots(before, after).changes.length, 1);
+  assert.equal(diffSnapshots(before, after, { dynamic: [css] }).changes.length, 0);
+});
+
+test('a user-data element that also moved is still reported as moved', () => {
+  const r = diffSnapshots(
+    snap([el('button', 'Группа: не указана', 273, 689, { dynamic: true, landmarks: ['main'] })]),
+    snap([el('button', 'Группа: 3ПИ41', 1100, 12, { dynamic: true, landmarks: ['banner'] })]),
+  );
+  assert.equal(r.changes.length, 1);
+  assert.deepEqual(r.changes[0].kinds, ['moved']);
+});

@@ -162,6 +162,44 @@ const defaultStorage = {
   remove(key) { try { localStorage.removeItem(key); } catch { memoryStore.delete(key); } },
 };
 
+// Review mode: the developer opens the site with the link printed by
+// `uichanges review`. The SDK then shows no hints and loads the review panel
+// from the local review server instead. The mode lasts for the browser tab.
+const REVIEW_KEY = 'uichanges:review';
+
+function reviewSession() {
+  let params;
+  try { params = new URLSearchParams(location.search); } catch { return null; }
+  const mode = params.get('uichanges');
+  if (mode === 'off') {
+    try { sessionStorage.removeItem(REVIEW_KEY); } catch { /* storage blocked */ }
+    return null;
+  }
+  if (mode === 'review' && params.get('uichanges-token')) {
+    const session = { port: Number(params.get('uichanges-port')) || 4400, token: params.get('uichanges-token') };
+    try { sessionStorage.setItem(REVIEW_KEY, JSON.stringify(session)); } catch { /* storage blocked */ }
+    // Keep the token out of the address bar, bookmarks and screenshots.
+    ['uichanges', 'uichanges-port', 'uichanges-token'].forEach((k) => params.delete(k));
+    const query = params.toString();
+    history.replaceState(history.state, '', location.pathname + (query ? `?${query}` : '') + location.hash);
+    return session;
+  }
+  try {
+    const raw = sessionStorage.getItem(REVIEW_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function loadReviewPanel(session) {
+  window.__uichangesReview = { ...session, resolve: resolveLocators, visualRect };
+  const script = document.createElement('script');
+  script.src = `http://127.0.0.1:${session.port}/review.js`;
+  script.onerror = () => console.warn(`uichanges: review panel not loaded. Is \`uichanges review\` running on port ${session.port}? Open the site with ?uichanges=off to leave review mode.`);
+  document.head.appendChild(script);
+}
+
 function pickContent(change, locale) {
   const c = change.content || {};
   const short = locale.split('-')[0];
@@ -382,7 +420,7 @@ function createSdk() {
   }
 
   return {
-    version: '0.1.1',
+    version: '0.2.0',
 
     /**
      * @param {{ manifest: string|object, locale?: string, storageKey?: string,
@@ -394,6 +432,11 @@ function createSdk() {
     async start(options) {
       if (typeof window === 'undefined' || s.started) return;
       s.started = true;
+      const review = reviewSession();
+      if (review) {
+        loadReviewPanel(review);
+        return;
+      }
       s.opts = { storageKey: 'uichanges:seen', storage: defaultStorage, maxBeacons: 3, autoOpen: false, showOnFirstVisit: false, ...options };
       s.key = s.opts.storageKey;
       s.locale = s.opts.locale || document.documentElement.lang || navigator.language || 'en';

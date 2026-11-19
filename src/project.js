@@ -14,6 +14,10 @@ export const DEFAULT_CONFIG = {
   storageState: null,
   // CSS selectors whose subtrees are never snapshotted (user data, ads, A/B blocks).
   ignore: [],
+  // Elements whose text is user data or state, by CSS path. Filled by the
+  // "This is user data" button in review mode; data-uichanges-dynamic in
+  // the markup does the same without a config entry.
+  dynamic: [],
   // Language of generated description templates.
   locale: 'en',
   // Where `build` writes the manifest the browser SDK loads.
@@ -98,6 +102,15 @@ export function ignoredIds(root) {
   return new Set(existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : []);
 }
 
+export function addDynamic(root, cssPath) {
+  const p = paths(root);
+  const raw = JSON.parse(readFileSync(p.config, 'utf8'));
+  const list = new Set(raw.dynamic || []);
+  list.add(cssPath);
+  raw.dynamic = [...list].sort();
+  writeFileSync(p.config, JSON.stringify(raw, null, 2) + '\n');
+}
+
 export function addIgnored(root, id) {
   const ids = ignoredIds(root);
   ids.add(id);
@@ -127,7 +140,7 @@ export function computeStatus(root) {
   for (const [file, after] of current) {
     const before = baseline.get(file);
     if (!before) { screens.push({ file, missingBaseline: true, changes: [] }); continue; }
-    const result = diffSnapshots(before, after);
+    const result = diffSnapshots(before, after, { dynamic: config.dynamic || [] });
     const screenName = file.replace(/@\d+\.json$/, '');
     const screenCfg = (config.screens || []).find((s) => s.name === screenName);
     for (const c of result.changes) {

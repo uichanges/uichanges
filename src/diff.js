@@ -16,6 +16,12 @@ const DEFAULTS = {
   matchThreshold: 0.55,
   /** Pairs below this score are reported with confidence "low". */
   confidentThreshold: 0.75,
+  /**
+   * CSS paths (the last locator of an element) whose text is user data or
+   * state. Their name changes are not reported. Elements marked with
+   * data-uichanges-dynamic in the page are treated the same way.
+   */
+  dynamic: [],
 };
 
 const WEIGHTS = { name: 0.55, landmarks: 0.15, position: 0.3 };
@@ -28,6 +34,8 @@ const WEIGHTS = { name: 0.55, landmarks: 0.15, position: 0.3 };
  */
 export function diffSnapshots(before, after, options = {}) {
   const opts = { ...DEFAULTS, ...options };
+  const dynamicPaths = new Set(opts.dynamic || []);
+  const isDynamic = (el) => Boolean(el.dynamic) || dynamicPaths.has(cssPathOf(el));
   if (before.viewport.width !== after.viewport.width) {
     throw new Error(
       `Snapshots have different viewport widths (${before.viewport.width} vs ${after.viewport.width}). ` +
@@ -77,7 +85,7 @@ export function diffSnapshots(before, after, options = {}) {
       const predicted = predictFromNeighbour(a, pairs, diag);
       for (const b of B) {
         if (usedB.has(b._i) || a.role !== b.role) continue;
-        const score = similarity(a, b, diag, predicted);
+        const score = similarity(a, b, diag, predicted, isDynamic(a) || isDynamic(b));
         if (score >= opts.matchThreshold) candidates.push({ a, b, score });
       }
     }
@@ -102,7 +110,7 @@ export function diffSnapshots(before, after, options = {}) {
     const dy = center(b).y - center(a).y;
     const residual = Math.hypot(dx - s.dx, dy - s.dy);
     if (landmarksChanged || residual > opts.moveThreshold) kinds.push('moved');
-    if (norm(a.name) !== norm(b.name)) kinds.push('renamed');
+    if (norm(a.name) !== norm(b.name) && !isDynamic(a) && !isDynamic(b)) kinds.push('renamed');
     if (kinds.length === 0) { unchanged++; continue; }
     changes.push({
       type: kinds[0],
@@ -145,8 +153,9 @@ function uniqueIndex(items, keyFn) {
   return map;
 }
 
-function similarity(a, b, diag, predicted) {
-  const nameSim = stringSimilarity(norm(a.name), norm(b.name));
+function similarity(a, b, diag, predicted, dynamicName = false) {
+  // A name that holds user data says nothing about identity.
+  const nameSim = dynamicName ? 1 : stringSimilarity(norm(a.name), norm(b.name));
   const la = a.landmarks || [];
   const lb = b.landmarks || [];
   const landmarkSim = landmarkKey(a) === landmarkKey(b) ? 1 : la.some((x) => lb.includes(x)) ? 0.5 : 0;
@@ -276,7 +285,14 @@ function summary(el) {
     landmarks: el.landmarks || [],
     box: el.box,
     locators: el.locators || [],
+    ...(el.dynamic ? { dynamic: true } : {}),
   };
+}
+
+/** The CSS path is always the last locator recorded by captureSnapshot. */
+export function cssPathOf(el) {
+  const locs = el.locators || [];
+  return locs.length ? locs[locs.length - 1] : null;
 }
 
 const TRANSLIT = {

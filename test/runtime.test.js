@@ -105,4 +105,32 @@ test('elements that appear later (SPA, Blazor rendering) still get their hint', 
   await page.close();
 });
 
+test('the element is re-rendered after the beacon appeared (Blazor prerendering)', { skip }, async () => {
+  const { page, errors } = await openDemo({ seen: ['link-podpiski', 'link-moi-zakazy', 'button-sravnit-tovary'] });
+  const root = page.locator('uichanges-root');
+  assert.equal(await root.locator('.beacon').count(), 1);
+
+  // Swap the cart link for an identical new node, the way Blazor replaces
+  // prerendered HTML when the interactive render starts.
+  await page.evaluate(() => {
+    const old = document.querySelector('header a[href="/cart"]');
+    old.replaceWith(old.cloneNode(true));
+  });
+  await page.waitForTimeout(100);
+
+  await root.locator('.beacon').click();
+  await page.waitForTimeout(200);
+  assert.equal(await root.locator('.card h2').textContent(), 'Корзина теперь в шапке');
+
+  // Replaced again while the card is open: the card follows the new node.
+  await page.evaluate(() => {
+    const old = document.querySelector('header a[href="/cart"]');
+    old.replaceWith(old.cloneNode(true));
+  });
+  await page.waitForTimeout(200);
+  assert.equal(await root.locator('.card').count(), 1);
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
 test.after(async () => { if (browser) await browser.close(); });

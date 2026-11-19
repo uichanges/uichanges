@@ -217,12 +217,23 @@ function createSdk() {
     }
   }
 
+  /** The element as it is in the DOM now; `known` if it is still attached. */
+  function freshTarget(change, known) {
+    if (known && known.isConnected) return known;
+    return change.locators.length ? resolveLocators(change.locators) : null;
+  }
+
   function addBeacon(change, target) {
     if (s.beacons.size >= s.opts.maxBeacons) return;
     const btn = el('button', 'beacon', s.layer);
     btn.type = 'button';
     btn.setAttribute('aria-label', `${labels().open}: ${pickContent(change, s.locale).title}`);
-    btn.addEventListener('click', () => openCard(change, target));
+    // Read the target at click time: frameworks (Blazor prerendering, React
+    // keys, Vue v-if) can replace the node after the beacon appeared.
+    btn.addEventListener('click', () => {
+      const b = s.beacons.get(change.id);
+      openCard(change, freshTarget(change, b && b.target));
+    });
     s.beacons.set(change.id, { node: btn, target, change });
     if (s.opts.onShow) s.opts.onShow(change);
     if (s.opts.autoOpen && !s.open) openCard(change, target);
@@ -324,7 +335,14 @@ function createSdk() {
     }
     if (!s.card) return;
     const { node, target, extra, from } = s.card;
-    if (target && !target.isConnected) { closeCard(false); return; } // navigated away
+    if (target && !target.isConnected) {
+      // Re-rendered: follow the new node. Gone for real (navigation): close.
+      const fresh = freshTarget(s.card.change, null);
+      if (!fresh) { closeCard(false); return; }
+      s.card.target = fresh;
+      layout();
+      return;
+    }
     const cw = node.offsetWidth;
     const ch = node.offsetHeight;
     if (!target) {
@@ -364,7 +382,7 @@ function createSdk() {
   }
 
   return {
-    version: '0.1.0',
+    version: '0.1.1',
 
     /**
      * @param {{ manifest: string|object, locale?: string, storageKey?: string,

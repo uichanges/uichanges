@@ -1,3 +1,6 @@
+[![npm](https://img.shields.io/npm/v/uichanges)](https://www.npmjs.com/package/uichanges)
+[![CI](https://github.com/uichanges/uichanges/actions/workflows/ci.yml/badge.svg)](https://github.com/uichanges/uichanges/actions/workflows/ci.yml)
+
 # uichanges
 
 > **Статус: прототип.** Ядро сравнения работает. Следующие шаги — SDK для браузера, плагин для dev-режима и оверлей ревью (см. дорожную карту ниже).

@@ -1,9 +1,12 @@
-# uichanges
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.png">
+  <img src="docs/images/banner.png" width="100%" alt="uichanges — показывает пользователям, что изменилось на сайте, прямо на изменённых элементах. Справа пример: кнопка «Корзина» переехала в шапку, на старом месте пунктирная рамка «Было здесь», стрелка к новому месту и подсказка «Корзина теперь здесь».">
+</picture>
 
-[![npm](https://img.shields.io/npm/v/uichanges)](https://www.npmjs.com/package/uichanges)
-[![CI](https://github.com/uichanges/uichanges/actions/workflows/ci.yml/badge.svg)](https://github.com/uichanges/uichanges/actions/workflows/ci.yml)
-
-**Подсказывает пользователям, что изменилось на вашем сайте, прямо там, где это изменилось.**
+<p align="center">
+  <a href="https://www.npmjs.com/package/uichanges"><img src="https://img.shields.io/npm/v/uichanges" alt="npm"></a>
+  <a href="https://github.com/uichanges/uichanges/actions/workflows/ci.yml"><img src="https://github.com/uichanges/uichanges/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
 
 Вы выпустили новую версию: перенесли кнопку, добавили функцию, переименовали раздел. Вы об этом знаете. Пользователь — нет. Он заходит, не находит привычную кнопку и пишет в поддержку, а новую функцию просто не замечает.
 

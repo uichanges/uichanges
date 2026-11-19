@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+:root {
+  --bg: #F5F5FA; --ink: #1F2330; --muted: #5B6070; --accent: #4F46E5; --halo: rgba(79,70,229,.18);
+  --panel: #FFFFFF; --line: #E4E6EE; --bar: #ECEEF4; --ghost: #9AA0B4; --soft: #F1F2F7; --card-shadow: 0 10px 28px rgba(15,20,40,.14), 0 0 0 1px rgba(15,20,40,.06);
+  --btn-ink: #FFFFFF;
+}
+body.dark {
+  --bg: #0D1117; --ink: #F4F4F8; --muted: #A3A8BA; --accent: #818CF8; --halo: rgba(129,140,248,.25);
+  --panel: #161A23; --line: #2A2F3D; --bar: #222735; --ghost: #6B7085; --soft: #1D2130; --card-shadow: 0 10px 28px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06);
+  --btn-ink: #0D1117;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.banner { width: 1280px; height: 420px; background: var(--bg); display: flex; align-items: center; gap: 64px; padding: 0 72px;
+  font-family: "Inter", sans-serif; color: var(--ink); }
+.left { flex: 1 1 0; display: flex; flex-direction: column; gap: 22px; }
+.brand { display: flex; align-items: center; gap: 20px; }
+.word { font-family: "Inter Display", "Inter", sans-serif; font-weight: 600; font-size: 72px; letter-spacing: -0.035em; line-height: 1; }
+.tag { margin: 0; font-size: 26px; line-height: 1.35; color: var(--muted); max-width: 520px; }
+.tag b { color: var(--ink); font-weight: 600; }
+
+.scene { position: relative; width: 540px; height: 286px; flex: none; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.chrome { height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 1px solid var(--line); }
+.chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--bar); display: block; }
+.header { position: absolute; top: 34px; left: 0; right: 0; height: 56px; display: flex; align-items: center; gap: 14px; padding: 0 20px; border-bottom: 1px solid var(--line); }
+.logo { width: 64px; height: 12px; border-radius: 6px; background: var(--ink); opacity: .85; }
+.search { width: 170px; height: 26px; border-radius: 8px; background: var(--soft); border: 1px solid var(--line); }
+.cart { margin-left: auto; position: relative; height: 30px; padding: 0 14px; border-radius: 8px; border: 2px solid var(--accent); display: flex; align-items: center;
+  font-size: 14px; font-weight: 600; color: var(--accent); }
+.beacon { position: absolute; top: -7px; right: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2.5px solid var(--panel); box-shadow: 0 0 0 6px var(--halo); }
+.side { position: absolute; top: 108px; left: 20px; width: 120px; display: flex; flex-direction: column; gap: 14px; }
+.side i { display: block; height: 10px; border-radius: 5px; background: var(--bar); }
+.ghost { position: absolute; top: 102px; left: 14px; width: 108px; height: 26px; border: 2px dashed var(--ghost); border-radius: 8px; }
+.ghost span { position: absolute; left: -2px; bottom: 100%; margin-bottom: 5px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.content { position: absolute; top: 108px; left: 168px; right: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.content i { display: block; height: 70px; border-radius: 10px; background: var(--soft); border: 1px solid var(--line); }
+.card { position: absolute; top: 104px; right: 16px; width: 236px; background: var(--panel); border-radius: 12px; box-shadow: var(--card-shadow); padding: 14px 16px; }
+.card b { display: block; font-size: 15px; margin-bottom: 4px; }
+.card p { margin: 0 0 12px; font-size: 13px; line-height: 1.4; color: var(--muted); }
+.card u { text-decoration: none; display: inline-block; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 7px; background: var(--accent); color: var(--btn-ink); }
+svg.arrow { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="left">
+    <div class="brand">
+      <svg width="84" height="84" viewBox="0 0 72 72" aria-hidden="true">
+        <rect x="8" y="32" width="30" height="30" rx="8" fill="none" stroke="var(--ghost)" stroke-width="3" stroke-dasharray="5 4"/>
+        <rect x="30" y="10" width="30" height="30" rx="8" fill="var(--accent)"/>
+        <circle cx="60" cy="10" r="10" fill="var(--halo)"/>
+        <circle cx="60" cy="10" r="5.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2.5"/>
+      </svg>
+      <div class="word">uichanges</div>
+    </div>
+    <p class="tag">Показывает пользователям, <b>что&nbsp;изменилось</b> на&nbsp;сайте — прямо на&nbsp;изменённых элементах</p>
+  </div>
+
+  <div class="scene">
+    <div class="chrome"><i></i><i></i><i></i></div>
+    <div class="header"><div class="logo"></div><div class="search"></div><div class="cart">Корзина<span class="beacon"></span></div></div>
+    <div class="side"><i style="width: 70%; opacity: 0"></i><i style="width: 84%"></i><i style="width: 62%"></i><i style="width: 76%"></i></div>
+    <div class="ghost"><span>Было здесь</span></div>
+    <div class="content"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <svg class="arrow" viewBox="0 0 540 286" aria-hidden="true">
+      <defs><marker id="h" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ghost)"/></marker></defs>
+      <path d="M126 108 C 210 104, 300 72, 416 62" fill="none" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#h)"/>
+    </svg>
+    <div class="card"><b>Корзина теперь здесь</b><p>Раньше она была в меню профиля. Теперь — в один клик с любой страницы.</p><u>Понятно</u></div>
+  </div>
+</div>
+</body>
+</html>

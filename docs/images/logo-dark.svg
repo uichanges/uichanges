@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" role="img" aria-label="uichanges">
+  <rect x="8" y="32" width="30" height="30" rx="8" fill="none" stroke="#6B7085" stroke-width="3" stroke-dasharray="5 4"/>
+  <rect x="30" y="10" width="30" height="30" rx="8" fill="#818CF8"/>
+  <circle cx="60" cy="10" r="10" fill="#818CF8" opacity="0.25"/>
+  <circle cx="60" cy="10" r="5.5" fill="#818CF8" stroke="#0D1117" stroke-width="2.5"/>
+</svg>

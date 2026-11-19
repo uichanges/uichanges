@@ -12,64 +12,14 @@ import { readDescription, saveDescription } from './describe.js';
 import { buildManifest } from './manifest.js';
 import { cssPathOf } from './diff.js';
 import { captureAll } from './commands.js';
+import { toReviewItems } from './review-items.js';
 
 const PANEL = new URL('./review-ui.js', import.meta.url);
-
-function union(boxes) {
-  const x = Math.min(...boxes.map((b) => b.x));
-  const y = Math.min(...boxes.map((b) => b.y));
-  return { x, y, w: Math.max(...boxes.map((b) => b.x + b.w)) - x, h: Math.max(...boxes.map((b) => b.y + b.h)) - y };
-}
 
 /** One entry per change; a block of elements that moved together is one entry. */
 export function reviewItems(root) {
   const status = computeStatus(root);
-  const items = [];
-  for (const screen of status.screens) {
-    const seenBlocks = new Set();
-    for (const c of screen.changes) {
-      if (c.block) {
-        if (seenBlocks.has(c.block.id)) continue;
-        seenBlocks.add(c.block.id);
-        const members = screen.changes.filter((m) => m.block && m.block.id === c.block.id);
-        const anchor = members.find((m) => m.after.role === 'heading') || members[0];
-        items.push({
-          id: c.block.id,
-          kind: 'block',
-          kinds: ['moved'],
-          status: c.status,
-          confidence: members.some((m) => m.confidence === 'low') ? 'low' : 'high',
-          path: c.path,
-          screen: c.screen,
-          role: anchor.after.role,
-          before: c.block.title,
-          after: c.block.title,
-          size: c.block.size,
-          locators: anchor.after.locators,
-          from: { ...union(members.map((m) => m.before.box)), viewportWidth: c.viewportWidth },
-          canBeDynamic: false,
-          description: readDescription(root, c.block.id),
-        });
-        continue;
-      }
-      items.push({
-        id: c.id,
-        kind: c.type,
-        kinds: c.kinds,
-        status: c.status,
-        confidence: c.confidence,
-        path: c.path,
-        screen: c.screen,
-        role: (c.after || c.before).role,
-        before: c.before ? c.before.name : null,
-        after: c.after ? c.after.name : null,
-        locators: c.after ? c.after.locators : [],
-        from: c.before && c.kinds.includes('moved') ? { ...c.before.box, viewportWidth: c.viewportWidth } : null,
-        canBeDynamic: c.kinds.includes('renamed'),
-        description: readDescription(root, c.id),
-      });
-    }
-  }
+  const items = status.screens.flatMap((screen) => toReviewItems(screen.changes, (id) => readDescription(root, id)));
   return { hasCurrent: status.hasCurrent, locale: loadConfig(root).locale, items };
 }
 

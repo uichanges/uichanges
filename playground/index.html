@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>uichanges: песочница</title>
+<meta name="description" content="Попробуйте uichanges в браузере: опишите изменения интерфейса как разработчик и посмотрите на подсказки глазами пользователя.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="playground.css">
+</head>
+<body>
+<header class="bar">
+  <a class="logo" href="./">
+    <svg width="28" height="28" viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="32" width="30" height="30" rx="8" fill="none" stroke="#9AA0B4" stroke-width="3" stroke-dasharray="5 4"/><rect x="30" y="10" width="30" height="30" rx="8" fill="#4F46E5"/><circle cx="60" cy="10" r="10" fill="#4F46E5" opacity=".18"/><circle cx="60" cy="10" r="5.5" fill="#4F46E5" stroke="#fff" stroke-width="2.5"/></svg>
+    <b>uichanges</b><span>песочница</span>
+  </a>
+  <div class="tabs" role="tablist" aria-label="Чья сторона">
+    <button role="tab" id="tab-dev" aria-selected="true" aria-controls="side-dev">Глазами разработчика</button>
+    <button role="tab" id="tab-user" aria-selected="false" aria-controls="side-user">Глазами пользователя</button>
+  </div>
+  <nav class="links">
+    <a href="https://github.com/uichanges/uichanges">GitHub</a>
+    <a href="https://www.npmjs.com/package/uichanges">npm</a>
+    <a href="https://github.com/uichanges/uichanges/blob/main/docs/reference.md">Справочник</a>
+  </nav>
+</header>
+
+<main class="stage">
+  <section class="side" id="side-dev" role="tabpanel" aria-labelledby="tab-dev">
+    <p class="intro">Справа магазин «Утварь». Пройдите путь разработчика: выпустите новую версию и опишите, что поменялось.</p>
+    <ol class="steps">
+      <li class="step" data-step="1">
+        <h2>Запомните текущую версию</h2>
+        <p>uichanges снимает слепок страницы: какие на ней кнопки, ссылки и заголовки и где они стоят.</p>
+        <button class="btn primary" id="do-baseline" type="button">Снять слепок</button>
+        <code class="cli">uichanges capture</code>
+      </li>
+      <li class="step" data-step="2">
+        <h2>Выпустите новую версию</h2>
+        <p>В ней корзину перенесли в шапку, добавили «Сравнить», «Заказы» переименовали, а «Подписки» убрали. В вашем проекте это просто изменения в коде.</p>
+        <button class="btn primary" id="do-release" type="button">Показать новую версию</button>
+      </li>
+      <li class="step" data-step="3">
+        <h2>Опишите изменения</h2>
+        <p>uichanges сравнит версии и подсветит, что изменилось. Выберите изменение в панели, напишите пару предложений и сохраните.</p>
+        <button class="btn primary" id="do-review" type="button">Найти изменения</button>
+        <code class="cli">uichanges review</code>
+      </li>
+      <li class="step" data-step="4">
+        <h2>Посмотрите глазами пользователя</h2>
+        <p>Пользователь, который был на сайте раньше, увидит ваши подсказки прямо на изменённых элементах.</p>
+        <button class="btn primary" id="do-user" type="button">Открыть</button>
+      </li>
+    </ol>
+    <button class="btn link" id="do-restart" type="button">Начать заново</button>
+  </section>
+
+  <section class="side" id="side-user" role="tabpanel" aria-labelledby="tab-user" hidden>
+    <p class="intro">Это новая версия магазина глазами покупателя, который заходил сюда раньше. Нажмите на точку у изменённого элемента.</p>
+    <p class="source" id="source"></p>
+    <div class="choice" role="radiogroup" aria-label="Кто открыл сайт">
+      <label><input type="radio" name="who" value="returning" checked> Был на сайте раньше</label>
+      <label><input type="radio" name="who" value="new"> Пришёл впервые</label>
+    </div>
+    <p class="hint" id="who-hint">Каждую подсказку он увидит один раз.</p>
+    <button class="btn" id="do-again" type="button">Показать подсказки заново</button>
+  </section>
+
+  <div class="browser">
+    <div class="chrome">
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="address">utvar.shop</span>
+      <span class="version" id="version">Версия 1</span>
+    </div>
+    <iframe id="frame" title="Демо-магазин «Утварь»"></iframe>
+  </div>
+</main>
+
+<p class="narrow">Песочница рассчитана на экран шире 900 пикселей. Откройте её на компьютере.</p>
+
+<script type="module" src="playground.js"></script>
+</body>
+</html>

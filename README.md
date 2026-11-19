@@ -1,5 +1,5 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner-dark.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner.png">
   <img src="docs/images/banner.png" width="100%" alt="uichanges — показывает пользователям, что изменилось на сайте, прямо на изменённых элементах. Справа пример: кнопка «Корзина» переехала в шапку, на старом месте пунктирная рамка «Было здесь», стрелка к новому месту и подсказка «Корзина теперь здесь».">
 </picture>
 

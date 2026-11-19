@@ -1,0 +1,48 @@
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.45 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; color: #1C1B22; background: #FBFAF8; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+header { height: 72px; display: flex; align-items: center; gap: 28px; padding: 0 32px; background: #FFFFFF; border-bottom: 1px solid #ECE9E4; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
+.brand b { width: 30px; height: 30px; border-radius: 9px; background: #2F6B4F; display: grid; place-items: center; color: #fff; font-size: 16px; }
+nav.top { display: flex; gap: 22px; color: #55525C; font-weight: 500; }
+.search { flex: 1; min-width: 0; max-width: 420px; height: 42px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-radius: 12px; background: #F4F2EE; color: #8A8691; }
+.search input { border: 0; background: none; outline: none; font: inherit; color: inherit; width: 100%; }
+.actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.ghostbtn { height: 42px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 12px; border: 1px solid #ECE9E4; background: #fff; font-weight: 500; }
+.cartbtn { height: 42px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 12px; border: 0; background: #1C1B22; color: #fff; font-weight: 600; }
+.count { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #E8B04B; color: #1C1B22; font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; border: 0; background: #E7EFEA; color: #2F6B4F; font-weight: 700; }
+
+.layout { display: flex; gap: 32px; padding: 28px 32px; }
+aside { width: 220px; flex: none; }
+.profile { background: #fff; border: 1px solid #ECE9E4; border-radius: 16px; padding: 18px 12px 10px; }
+.who { display: flex; align-items: center; gap: 12px; padding: 0 8px 14px; border-bottom: 1px solid #F0EDE8; margin-bottom: 8px; }
+.who span.a { width: 40px; height: 40px; border-radius: 50%; background: #E7EFEA; color: #2F6B4F; font-weight: 700; display: grid; place-items: center; }
+.who b { display: block; font-size: 15px; }
+.who small { color: #8A8691; font-size: 13px; }
+.menu { display: flex; flex-direction: column; }
+.menu a { display: flex; align-items: center; gap: 12px; padding: 9px 8px; border-radius: 10px; color: #3A3842; font-weight: 500; }
+.menu a .count { margin-left: auto; }
+
+main { flex: 1; min-width: 0; }
+.crumbs { color: #8A8691; font-size: 13px; }
+h1 { margin: 4px 0 14px; font-size: 30px; letter-spacing: -0.02em; }
+.chips { display: flex; gap: 8px; margin-bottom: 20px; }
+.chip { height: 34px; padding: 0 14px; border-radius: 17px; border: 1px solid #E4E0DA; background: #fff; font-size: 14px; font-weight: 500; color: #3A3842; }
+.chip.on { background: #1C1B22; border-color: #1C1B22; color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
+.card { background: #fff; border: 1px solid #ECE9E4; border-radius: 16px; padding: 10px 10px 14px; }
+.pic { height: 132px; border-radius: 12px; display: grid; place-items: center; }
+.pic svg { width: 96px; height: 96px; }
+.card h2 { margin: 12px 4px 2px; font-size: 15px; font-weight: 600; }
+.meta { margin: 0 4px; display: flex; align-items: center; gap: 6px; color: #8A8691; font-size: 13px; }
+.meta .star { color: #E8B04B; }
+.buy { display: flex; align-items: center; justify-content: space-between; margin: 12px 4px 0; }
+.price { font-size: 17px; font-weight: 700; }
+.add { height: 34px; padding: 0 12px; border-radius: 10px; border: 0; background: #2F6B4F; color: #fff; font-size: 13px; font-weight: 600; }
+
+@media (max-width: 1080px) { nav.top { display: none; } header { gap: 18px; padding: 0 20px; } .layout { padding: 24px 20px; gap: 24px; } }
+@media (max-width: 760px) { aside { display: none; } }

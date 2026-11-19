@@ -6,3 +6,4 @@ before.json
 after.json
 *.log
 .DS_Store
+_site/

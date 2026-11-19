@@ -201,7 +201,7 @@ function reviewSession() {
 function loadReviewPanel(session) {
   window.__uichangesReview = { ...session, resolve: resolveLocators, visualRect };
   const script = document.createElement('script');
-  script.src = `http://127.0.0.1:${session.port}/review.js`;
+  script.src = session.panel || `http://127.0.0.1:${session.port}/review.js`;
   script.onerror = () => console.warn(`uichanges: review panel not loaded. Is \`uichanges review\` running on port ${session.port}? Open the site with ?uichanges=off to leave review mode.`);
   document.head.appendChild(script);
 }
@@ -426,7 +426,7 @@ function createSdk() {
   }
 
   return {
-    version: '0.2.1',
+    version: '0.3.0',
 
     /**
      * @param {{ manifest: string|object, locale?: string, storageKey?: string,
@@ -479,6 +479,20 @@ function createSdk() {
       on(window, 'resize', schedule);
       on(window, 'popstate', schedule);
       schedule();
+    },
+
+    /**
+     * Opens the review panel with your own storage instead of the local
+     * `uichanges review` server: for a hosted demo, or to keep descriptions
+     * in your own backend. `api(method, path, body)` answers the same calls
+     * as the server (see src/review-server.js) and returns their JSON.
+     *
+     * @param {{ api: (method: string, path: string, body?: object) => Promise<object>,
+     *   panel: string, onExit?: () => void }} options  `panel` is the URL of review-ui.js.
+     */
+    review(options) {
+      if (typeof window === 'undefined') return;
+      loadReviewPanel({ api: options.api, panel: options.panel, onExit: options.onExit });
     },
 
     /** Opens the hint for a change by id, if its element is on the page. */

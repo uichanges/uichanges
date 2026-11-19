@@ -1,0 +1,62 @@
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font: 15px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; color: #1F2330; background: #F5F5FA; display: flex; flex-direction: column; }
+a { color: #4F46E5; }
+button { font: inherit; }
+[hidden] { display: none !important; }
+
+.bar { height: 60px; flex: none; display: flex; align-items: center; gap: 24px; padding: 0 20px; background: #fff; border-bottom: 1px solid #E4E6EE; }
+.logo { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.logo b { font-size: 17px; letter-spacing: -0.02em; }
+.logo span { color: #6B7080; }
+.tabs { margin: 0 auto; display: flex; padding: 4px; background: #F1F2F7; border-radius: 12px; gap: 4px; }
+.tabs button { border: 0; background: none; padding: 7px 16px; border-radius: 9px; font-weight: 600; color: #5B6070; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: #fff; color: #1F2330; box-shadow: 0 1px 3px rgba(15,20,40,.12); }
+.tabs button:focus-visible, .btn:focus-visible { outline: 2px solid #4F46E5; outline-offset: 2px; }
+.links { display: flex; gap: 18px; }
+.links a { text-decoration: none; font-weight: 500; color: #5B6070; }
+.links a:hover { color: #1F2330; }
+
+.stage { flex: 1; min-height: 0; display: flex; gap: 20px; padding: 20px; }
+.side { width: 340px; flex: none; overflow: auto; }
+.intro { margin: 0 0 16px; color: #3B3F4E; }
+.steps { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+.step { position: relative; background: #fff; border: 1px solid #E4E6EE; border-radius: 14px; padding: 14px 16px 16px 52px; counter-increment: step; }
+.step::before { content: counter(step); position: absolute; left: 16px; top: 14px; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 13px; font-weight: 700; background: #F1F2F7; color: #5B6070; }
+.step h2 { margin: 1px 0 4px; font-size: 15px; }
+.step p { margin: 0 0 12px; color: #5B6070; font-size: 14px; }
+.step.done::before { content: "✓"; background: #DCFCE7; color: #166534; }
+.step.active { border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+.step.active::before { background: #4F46E5; color: #fff; }
+.step:not(.active) p, .step:not(.active) .btn, .step:not(.active) .cli { display: none; }
+.cli { display: inline-block; margin-left: 10px; font: 12px ui-monospace, Consolas, monospace; color: #6B7080; }
+
+.btn { border: 1px solid #D7D9E0; background: #fff; color: #1F2330; border-radius: 10px; padding: 8px 14px; font-weight: 600; cursor: pointer; }
+.btn:hover { background: #F5F6FA; }
+.btn.primary { background: #4F46E5; border-color: transparent; color: #fff; }
+.btn.primary:hover { background: #4338CA; }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.link { border: 0; background: none; padding: 4px 0; color: #6B7080; font-weight: 500; }
+.btn.link:hover { color: #1F2330; background: none; }
+
+.source { margin: 0 0 16px; padding: 10px 12px; border-radius: 10px; background: #EEF2FF; color: #3730A3; font-size: 14px; }
+.choice { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.choice label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.hint { margin: 0 0 16px; color: #5B6070; font-size: 14px; }
+
+.browser { flex: 1; min-width: 0; display: flex; flex-direction: column; background: #fff; border: 1px solid #E4E6EE; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15,20,40,.06); }
+.chrome { height: 40px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 14px; border-bottom: 1px solid #ECEEF4; background: #FAFAFC; }
+.dots { display: flex; gap: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: #E1E3EA; }
+.address { flex: 1; max-width: 420px; height: 26px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; background: #F1F2F7; color: #6B7080; font-size: 13px; }
+.version { margin-left: auto; font-size: 12px; font-weight: 600; color: #5B6070; background: #F1F2F7; padding: 3px 10px; border-radius: 10px; }
+.version.v2 { background: #EEF2FF; color: #3730A3; }
+iframe { flex: 1; width: 100%; border: 0; background: #FBFAF8; }
+
+.narrow { display: none; }
+@media (max-width: 900px) {
+  .stage, .tabs, .links { display: none; }
+  .narrow { display: block; margin: 40px 24px; font-size: 17px; }
+}

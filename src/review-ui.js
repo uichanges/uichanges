@@ -148,6 +148,8 @@ input:focus, textarea:focus, select:focus, .btn:focus-visible { outline: 2px sol
   const onThisPage = (item) => !item.path || normPath(item.path) === normPath(location.pathname);
 
   async function api(method, path, body) {
+    // Custom storage (uichanges.review({ api })): same calls, same answers.
+    if (ctx.api) return ctx.api(method, path, body);
     let res;
     try {
       res = await fetch(API + path, {
@@ -506,6 +508,12 @@ input:focus, textarea:focus, select:focus, .btn:focus-visible { outline: 2px sol
   }
 
   function exitReview() {
+    if (ctx.onExit) {
+      host.remove();
+      window.__uichangesReviewLoaded = false;
+      ctx.onExit();
+      return;
+    }
     try { sessionStorage.removeItem('uichanges:review'); } catch { /* storage blocked */ }
     location.reload();
   }

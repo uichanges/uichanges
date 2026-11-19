@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100" role="img" aria-label="uichanges">
+  <rect width="100" height="100" rx="24" fill="#4F46E5"/>
+  <g transform="translate(14 14)">
+    <rect x="8" y="32" width="30" height="30" rx="8" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="3" stroke-dasharray="5 4"/>
+    <rect x="30" y="10" width="30" height="30" rx="8" fill="#FFFFFF"/>
+    <circle cx="60" cy="10" r="10" fill="#FFFFFF" opacity="0.28"/>
+    <circle cx="60" cy="10" r="5.5" fill="#FFFFFF" stroke="#4F46E5" stroke-width="2.5"/>
+  </g>
+</svg>

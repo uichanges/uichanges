@@ -1,9 +1,18 @@
-# uichanges
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.svg">
+    <img src="docs/images/logo.svg" width="96" height="96" alt="Логотип uichanges: пунктирный квадрат — старое место элемента, сплошной — новое, точка — маячок">
+  </picture>
+</p>
 
-[![npm](https://img.shields.io/npm/v/uichanges)](https://www.npmjs.com/package/uichanges)
-[![CI](https://github.com/uichanges/uichanges/actions/workflows/ci.yml/badge.svg)](https://github.com/uichanges/uichanges/actions/workflows/ci.yml)
+<h1 align="center">uichanges</h1>
 
-**Подсказывает пользователям, что изменилось на вашем сайте, прямо там, где это изменилось.**
+<p align="center">
+  <a href="https://www.npmjs.com/package/uichanges"><img src="https://img.shields.io/npm/v/uichanges" alt="npm"></a>
+  <a href="https://github.com/uichanges/uichanges/actions/workflows/ci.yml"><img src="https://github.com/uichanges/uichanges/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
+
+<p align="center"><b>Подсказывает пользователям, что изменилось на вашем сайте, прямо там, где это изменилось.</b></p>
 
 Вы выпустили новую версию: перенесли кнопку, добавили функцию, переименовали раздел. Вы об этом знаете. Пользователь — нет. Он заходит, не находит привычную кнопку и пишет в поддержку, а новую функцию просто не замечает.
 

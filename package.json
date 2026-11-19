@@ -1,6 +1,6 @@
 {
   "name": "uichanges",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Find what changed in your web UI between versions and explain it to users, right on the page.",
   "type": "module",
   "license": "MIT",

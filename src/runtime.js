@@ -144,6 +144,12 @@ const FORM_TAGS = new Set(['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA']);
 function visualRect(el) {
   const r = el.getBoundingClientRect();
   if (FORM_TAGS.has(el.tagName)) return r;
+  // A link styled as a button (its own background or border) is visually
+  // the whole box, not just its text.
+  const st = getComputedStyle(el);
+  const hasBox = (st.backgroundColor !== 'rgba(0, 0, 0, 0)' && st.backgroundColor !== 'transparent')
+    || ['Top', 'Right', 'Bottom', 'Left'].some((side) => parseFloat(st[`border${side}Width`]) > 0 && st[`border${side}Style`] !== 'none');
+  if (hasBox) return r;
   const range = document.createRange();
   range.selectNodeContents(el);
   const t = range.getBoundingClientRect();
@@ -420,7 +426,7 @@ function createSdk() {
   }
 
   return {
-    version: '0.2.0',
+    version: '0.2.1',
 
     /**
      * @param {{ manifest: string|object, locale?: string, storageKey?: string,

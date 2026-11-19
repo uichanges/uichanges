@@ -133,4 +133,27 @@ test('the element is re-rendered after the beacon appeared (Blazor prerendering)
   await page.close();
 });
 
+test('a link styled as a button is outlined as a whole box, a plain link by its text', { skip }, async () => {
+  const { page } = await openDemo({ seen: ['link-podpiski', 'button-sravnit-tovary'] });
+  const root = page.locator('uichanges-root');
+  const width = async (selector) => (await page.locator(selector).boundingBox()).width;
+
+  // Plain link stretched to the sidebar width: the ring hugs the text.
+  await page.evaluate(() => window.uichanges.open('link-moi-zakazy'));
+  const plain = (await root.locator('.ring').boundingBox()).width;
+  assert.ok(plain < await width('aside a[href="/orders"]'), `ring ${plain}px should be narrower than the link`);
+  await page.keyboard.press('Escape');
+
+  // The cart link gets a background and padding: the ring takes the whole box.
+  await page.evaluate(() => Object.assign(document.querySelector('header a[href="/cart"]').style, {
+    display: 'inline-block', padding: '8px 40px', background: '#111', color: '#fff',
+  }));
+  await page.evaluate(() => window.uichanges.open('link-korzina'));
+  const box = await width('header a[href="/cart"]');
+  const ring = (await root.locator('.ring').boundingBox()).width;
+  // 4 px of padding and a 2 px border on each side of the ring.
+  assert.ok(Math.abs(ring - (box + 12)) <= 2, `ring ${ring}px, link ${box}px`);
+  await page.close();
+});
+
 test.after(async () => { if (browser) await browser.close(); });

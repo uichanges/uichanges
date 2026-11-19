@@ -72,6 +72,23 @@ export function captureSnapshot(options = {}) {
     return clean(el.getAttribute('aria-label'));
   }
 
+  // textContent glues "не указана" + "изменить" when they are separate
+  // elements. Put a space at every element boundary; skip hidden parts and
+  // aria-hidden icons (icon fonts would otherwise leak names like "arrow_forward").
+  function visibleText(node) {
+    let out = '';
+    for (const child of node.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        out += child.nodeValue;
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        if (child.getAttribute('aria-hidden') === 'true') continue;
+        if (getComputedStyle(child).display === 'none') continue;
+        out += ` ${visibleText(child)} `;
+      }
+    }
+    return out;
+  }
+
   function nameOf(el) {
     const fromAria = ariaName(el);
     if (fromAria) return cut(fromAria);
@@ -88,7 +105,7 @@ export function captureSnapshot(options = {}) {
       const ph = clean(el.getAttribute('placeholder'));
       if (ph) return cut(ph);
     }
-    const text = clean(el.textContent);
+    const text = clean(visibleText(el));
     if (text) return cut(text);
     const img = el.querySelector('img[alt]');
     if (img && clean(img.getAttribute('alt'))) return cut(clean(img.getAttribute('alt')));

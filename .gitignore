@@ -1,4 +1,8 @@
 node_modules/
+dist/
 examples/*.json
+auth.json
+before.json
+after.json
 *.log
 .DS_Store

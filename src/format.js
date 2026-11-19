@@ -7,6 +7,9 @@ const cyan = paint(36);
 const dim = paint(2);
 const bold = paint(1);
 
+/** Colour helpers shared with the other CLI commands. */
+export const paintAll = { green, red, yellow, cyan, dim, bold };
+
 const SIGN = { added: green('+ added  '), removed: red('- removed'), moved: cyan('→ moved  '), renamed: yellow('~ renamed') };
 
 const where = (landmarks) => (landmarks.length ? landmarks.join(' › ') : 'page');

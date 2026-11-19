@@ -1,6 +1,6 @@
 {
   "name": "uichanges",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Find what changed in your web UI between versions and explain it to users, right on the page.",
   "type": "module",
   "license": "MIT",
@@ -9,18 +9,24 @@
   },
   "exports": {
     ".": "./src/index.js",
+    "./runtime": "./src/runtime.js",
+    "./dist/uichanges.js": "./dist/uichanges.js",
     "./node": "./src/node.js",
     "./capture": "./src/capture.js"
   },
   "files": [
     "bin",
-    "src"
+    "src",
+    "dist"
   ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "test": "node --test",
+    "build:runtime": "node scripts/build-runtime.js",
+    "prepack": "node scripts/build-runtime.js",
+    "demo": "node scripts/demo.js",
     "example": "node bin/uichanges.js snapshot examples/shop-v1.html --screen catalog -o examples/v1.json && node bin/uichanges.js snapshot examples/shop-v2.html --screen catalog -o examples/v2.json && node bin/uichanges.js diff examples/v1.json examples/v2.json"
   },
   "peerDependencies": {

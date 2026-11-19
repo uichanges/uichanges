@@ -74,9 +74,10 @@ export function diffSnapshots(before, after, options = {}) {
     const candidates = [];
     for (const a of A) {
       if (usedA.has(a._i)) continue;
+      const predicted = predictFromNeighbour(a, pairs, diag);
       for (const b of B) {
         if (usedB.has(b._i) || a.role !== b.role) continue;
-        const score = similarity(a, b, diag);
+        const score = similarity(a, b, diag, predicted);
         if (score >= opts.matchThreshold) candidates.push({ a, b, score });
       }
     }
@@ -118,6 +119,7 @@ export function diffSnapshots(before, after, options = {}) {
   for (const a of A) if (!usedA.has(a._i)) changes.push({ type: 'removed', kinds: ['removed'], confidence: 'high', before: summary(a), after: null });
 
   assignIds(changes);
+  groupBlocks(changes);
   changes.sort((x, y) => ORDER[x.type] - ORDER[y.type] || x.id.localeCompare(y.id));
 
   return {
@@ -143,14 +145,80 @@ function uniqueIndex(items, keyFn) {
   return map;
 }
 
-function similarity(a, b, diag) {
+function similarity(a, b, diag, predicted) {
   const nameSim = stringSimilarity(norm(a.name), norm(b.name));
   const la = a.landmarks || [];
   const lb = b.landmarks || [];
   const landmarkSim = landmarkKey(a) === landmarkKey(b) ? 1 : la.some((x) => lb.includes(x)) ? 0.5 : 0;
   const dist = Math.hypot(center(a).x - center(b).x, center(a).y - center(b).y);
-  const positionSim = Math.max(0, 1 - dist / (diag * 0.5));
+  let positionSim = Math.max(0, 1 - dist / (diag * 0.5));
+  // Where `a` should be if it travelled with its nearest already-matched
+  // neighbour (a button moving together with its section heading).
+  if (predicted) {
+    const rel = Math.hypot(predicted.x - b.box.x, predicted.y - b.box.y);
+    positionSim = Math.max(positionSim, Math.max(0, 1 - rel / (diag * 0.5)));
+  }
   return WEIGHTS.name * nameSim + WEIGHTS.landmarks * landmarkSim + WEIGHTS.position * positionSim;
+}
+
+/**
+ * Predicts the new top-left corner of `a` from the displacement of its
+ * nearest matched neighbour in the same landmark. Top-left, not centre:
+ * a renamed button changes width, but its corner moves with the block.
+ */
+function predictFromNeighbour(a, pairs, diag) {
+  let best = null;
+  let bestDist = diag * 0.25;
+  for (const p of pairs) {
+    if (landmarkKey(p.a) !== landmarkKey(a)) continue;
+    const d = Math.hypot(center(p.a).x - center(a).x, center(p.a).y - center(a).y);
+    if (d < bestDist) { bestDist = d; best = p; }
+  }
+  if (!best) return null;
+  return {
+    x: a.box.x + (best.b.box.x - best.a.box.x),
+    y: a.box.y + (best.b.box.y - best.a.box.y),
+  };
+}
+
+/**
+ * Elements that moved together (same landmarks, same displacement of the
+ * top-left corner, close to each other) are one block: the developer
+ * describes the block once instead of each of its parts.
+ */
+function groupBlocks(changes, tolerance = 8, reach = 300) {
+  const moved = changes.filter((c) => c.kinds.includes('moved'));
+  const delta = (c) => ({ x: c.after.box.x - c.before.box.x, y: c.after.box.y - c.before.box.y });
+  const parent = moved.map((_, i) => i);
+  const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+
+  for (let i = 0; i < moved.length; i++) {
+    for (let j = i + 1; j < moved.length; j++) {
+      const p = moved[i];
+      const q = moved[j];
+      const dp = delta(p);
+      const dq = delta(q);
+      const sameMove = Math.abs(dp.x - dq.x) <= tolerance && Math.abs(dp.y - dq.y) <= tolerance;
+      const sameRegions = landmarkKey(p.before) === landmarkKey(q.before) && landmarkKey(p.after) === landmarkKey(q.after);
+      const near = Math.hypot(center(p.before).x - center(q.before).x, center(p.before).y - center(q.before).y) <= reach;
+      if (sameMove && sameRegions && near) parent[find(i)] = find(j);
+    }
+  }
+
+  const groups = new Map();
+  moved.forEach((c, i) => {
+    const root = find(i);
+    if (!groups.has(root)) groups.set(root, []);
+    groups.get(root).push(c);
+  });
+
+  for (const members of groups.values()) {
+    if (members.length < 2) continue;
+    members.sort((p, q) => p.before.box.y - q.before.box.y || p.before.box.x - q.before.box.x);
+    const titleEl = (members.find((c) => c.after.role === 'heading') || members[0]).after;
+    const block = { id: `block-${slugify(titleEl.name) || titleEl.role}`, title: titleEl.name, size: members.length };
+    for (const c of members) c.block = block;
+  }
 }
 
 /** 1 − normalized Levenshtein distance. */

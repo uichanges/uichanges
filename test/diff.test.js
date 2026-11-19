@@ -110,6 +110,53 @@ test('uncertain matches are flagged low confidence', () => {
   assert.equal(r.changes[0].confidence, 'low');
 });
 
+// Two cards in a grid swap places; the button in card A is also reworded.
+// Reproduces a real report: the reworded button used to come out as
+// "added + removed" because it travelled far and its name changed a lot.
+function swappedCards() {
+  const R = ['main', 'region:Темы'];
+  const before = snap([
+    el('heading', 'Темы', 260, 100, { landmarks: R }),
+    el('heading', 'Правила и порядок', 285, 515, { landmarks: R }),
+    el('button', 'Как оформить академический отпуск?', 285, 606, { landmarks: R, box: { x: 285, y: 606, w: 294, h: 44 } }),
+    el('heading', 'Файл методички', 671, 518, { landmarks: R }),
+    el('button', 'Пришли методичку по базам данных', 671, 609, { landmarks: R }),
+  ]);
+  const after = snap([
+    el('heading', 'Темы', 260, 100, { landmarks: R }),
+    el('heading', 'Файл методички', 285, 515, { landmarks: R }),
+    el('button', 'Пришли методичку по базам данных', 285, 606, { landmarks: R }),
+    el('heading', 'Правила и порядок', 671, 518, { landmarks: R }),
+    el('button', 'Как уйти в академ?', 671, 609, { landmarks: R, box: { x: 671, y: 609, w: 160, h: 44 } }),
+  ]);
+  return diffSnapshots(before, after);
+}
+
+test('an element that travels with its neighbour is matched despite a new name', () => {
+  const r = swappedCards();
+  const academ = r.changes.find((c) => c.after && c.after.name === 'Как уйти в академ?');
+  assert.ok(academ, 'expected a pair, got added + removed');
+  assert.deepEqual(academ.kinds, ['moved', 'renamed']);
+  assert.equal(academ.confidence, 'low');
+  assert.ok(!r.changes.some((c) => c.type === 'added' || c.type === 'removed'));
+});
+
+test('elements that moved together are grouped into a block', () => {
+  const r = swappedCards();
+  const blocks = new Map();
+  for (const c of r.changes) if (c.block) blocks.set(c.block.id, c.block);
+  assert.deepEqual([...blocks.keys()].sort(), ['block-fayl-metodichki', 'block-pravila-i-poryadok']);
+  assert.ok([...blocks.values()].every((b) => b.size === 2));
+});
+
+test('a lone move is not a block', () => {
+  const r = diffSnapshots(
+    snap([el('link', 'Корзина', 24, 90, { landmarks: ['complementary'] })]),
+    snap([el('link', 'Корзина', 1100, 12, { landmarks: ['banner'] })]),
+  );
+  assert.equal(r.changes[0].block, undefined);
+});
+
 test('different viewport widths are refused', () => {
   assert.throws(
     () => diffSnapshots(snap([]), snap([], { width: 375, height: 800 })),

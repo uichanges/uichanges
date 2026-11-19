@@ -1,19 +1,19 @@
 # uichanges
 
-> **Status: prototype.** The diff core works; the runtime SDK, dev-mode plugin and review overlay are next. See the roadmap below.
+> **Статус: прототип.** Ядро сравнения работает. Следующие шаги — SDK для браузера, плагин для dev-режима и оверлей ревью (см. дорожную карту ниже).
 
-Your users open the new version of your site and can't find the button that moved, or don't notice the feature you just shipped. **uichanges** finds what changed in your UI between versions, asks you for a one-line description, and shows it to users right on the element: a hint, a short slideshow, or an arrow from where the button used to be.
+Пользователи открывают новую версию вашего сайта и не могут найти кнопку, которая переехала, или не замечают фичу, которую вы только что выпустили. **uichanges** находит, что изменилось в интерфейсе между версиями, просит вас описать изменение в одну строку и показывает это описание пользователям прямо на элементе: подсказкой, короткими слайдами или стрелкой от места, где кнопка была раньше.
 
-It compares **what the browser renders** (roles, accessible names, landmarks, positions), not your source code. That keeps it framework-agnostic: React, Vue, Svelte, server templates and plain HTML all look the same to it.
+Сравнивается **то, что отрисовал браузер** (роли, доступные имена, ориентиры страницы, координаты), а не исходный код. Поэтому библиотека не зависит от фреймворка: React, Vue, Svelte, серверные шаблоны и обычный HTML для неё выглядят одинаково.
 
-## Try the prototype
+## Попробовать прототип
 
 ```bash
 npm i -D uichanges playwright
 npx playwright install chromium
 
 npx uichanges snapshot http://localhost:3000/catalog -o before.json
-# …change your UI…
+# …меняете интерфейс…
 npx uichanges snapshot http://localhost:3000/catalog -o after.json
 npx uichanges diff before.json after.json
 ```
@@ -30,55 +30,55 @@ uichanges diff  catalog @ 1280px
 5 change(s) · 15 unchanged · 19 → 19 elements
 ```
 
-This output comes from the two pages in [`examples/`](examples): run `npm run example`.
+Этот вывод получен на двух страницах из папки [`examples/`](examples). Повторить можно командой `npm run example`.
 
-## How matching works
+## Как сопоставляются элементы
 
-A diff is only useful if "the same button, moved" is not reported as "one removed, one added". Elements are paired in three passes, strongest signal first:
+Дифф полезен, только если «та же кнопка, но в другом месте» не превращается в «одна удалена, другая добавлена». Поэтому элементы сопоставляются в три прохода, от самого надёжного признака к самому слабому:
 
-1. **Explicit keys:** `data-uichanges`, then `data-testid` (many projects already have these).
-2. **Role + accessible name**, when unique on both sides.
-3. **Similarity score** from role, name, landmark path and position, paired greedily best-first. Weak pairs come back with `confidence: "low"` so you can confirm them.
+1. **Явные ключи**: сначала `data-uichanges`, затем `data-testid` (во многих проектах они уже есть).
+2. **Роль + доступное имя**, если такая пара уникальна в обеих версиях.
+3. **Оценка похожести** по роли, имени, пути ориентиров и положению. Пары подбираются жадно, начиная с самых похожих. Сомнительные пары помечаются `confidence: "low"`, чтобы вы могли их подтвердить.
 
-Then each pair is classified:
+Затем каждая пара получает тип:
 
-- **moved:** its landmark changed (sidebar → header), or it travelled more than 120 px after subtracting the shift shared by its whole region. A taller header doesn't make the whole page "move".
-- **renamed:** its accessible name changed.
+- **moved** (перемещён): у элемента сменился ориентир (боковая панель → шапка) или он сдвинулся больше чем на 120 px с поправкой на общий сдвиг его области. Если шапка стала выше, страница целиком не считается «перемещённой».
+- **renamed** (переименован): изменилось доступное имя.
 
-Unpaired elements are **added** or **removed**.
+Элементы без пары считаются **added** (добавлен) или **removed** (удалён).
 
-Snapshots are compared only at the **same viewport width**. A button that hides in a burger menu on mobile is layout adaptation, not a change.
+Слепки сравниваются только **при одинаковой ширине экрана**. Кнопка, которая на мобильном прячется в бургер-меню, — это адаптация вёрстки, а не изменение.
 
-### Keep noise out
+### Как убрать шум
 
 ```html
-<section data-uichanges-ignore>…personal recommendations…</section>
-<button data-uichanges="export-report">Export</button>  <!-- pin identity explicitly -->
+<section data-uichanges-ignore>…персональные рекомендации…</section>
+<button data-uichanges="export-report">Экспорт</button>  <!-- явно закрепить идентичность -->
 ```
 
 ## API
 
 ```js
-import { captureSnapshot, diffSnapshots } from 'uichanges';  // browser-safe
-import { snapshotPage, formatDiff } from 'uichanges/node';   // Node only
+import { captureSnapshot, diffSnapshots } from 'uichanges';  // безопасно для браузера
+import { snapshotPage, formatDiff } from 'uichanges/node';   // только Node
 
 const before = await snapshotPage('http://localhost:3000', { width: 1280 });
 const after = await snapshotPage('http://localhost:3000', { width: 1280 });
 const { changes } = diffSnapshots(before, after);
 ```
 
-`captureSnapshot()` is self-contained, so you can run it in any page: `page.evaluate(captureSnapshot)` in Playwright, or from a dev-mode script.
+Функция `captureSnapshot()` самодостаточна, поэтому её можно запустить на любой странице: через `page.evaluate(captureSnapshot)` в Playwright или из скрипта в dev-режиме.
 
-## Roadmap
+## Дорожная карта
 
-- [x] Snapshot capture, three-pass matching, CLI `snapshot` / `diff`
-- [ ] `.uichanges/` folder: baseline snapshots in git, `status` / `accept` / `check`
-- [ ] Change descriptions in Markdown with slides and auto before/after screenshots
-- [ ] Vite plugin: snapshots captured while you use the app in dev mode
-- [ ] Review overlay (`?uichanges=review`) to describe changes on the page itself
-- [ ] Runtime SDK: hints, slides, "moved here" ghost, per-user seen list
-- [ ] Interactive tours (`waitFor: click | route`)
+- [x] Снятие слепков, сопоставление в три прохода, CLI-команды `snapshot` / `diff`
+- [ ] Папка `.uichanges/`: базовые слепки в git, команды `status` / `accept` / `check`
+- [ ] Описания изменений в Markdown со слайдами и автоматическими скриншотами «до/после»
+- [ ] Плагин для Vite: слепки снимаются, пока вы работаете с приложением в dev-режиме
+- [ ] Оверлей ревью (`?uichanges=review`) для описания изменений прямо на странице
+- [ ] SDK для браузера: подсказки, слайды, «призрак» на старом месте, список просмотренного для каждого пользователя
+- [ ] Интерактивные туры (`waitFor: click | route`)
 
-## License
+## Лицензия
 
 MIT

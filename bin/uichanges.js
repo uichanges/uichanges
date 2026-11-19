@@ -14,6 +14,7 @@ Project workflow (run inside your app's repository):
   uichanges accept                 Make the current snapshots the new baseline.
   uichanges check                  For CI: exit code 1 if a change has no description.
   uichanges build [-o file]        Compile descriptions into the manifest the browser SDK loads.
+  uichanges review [--port 4400]   Describe changes right on your site: highlights + a side panel.
 
 Single files:
   uichanges snapshot <url|file.html> [-o out.json] [--width 1280] [--height 800] [--screen name]
@@ -49,6 +50,7 @@ function parse(argv) {
     else if (a === '--delay') args.delay = Number(next());
     else if (a === '--ignore') args.ignore.push(next());
     else if (a === '--locale') args.locale = next();
+    else if (a === '--port') args.port = Number(next());
     else if (a === '--force') args.force = true;
     else if (a === '--json') args.json = true;
     else if (a === '--fail-on-changes') args.failOnChanges = true;
@@ -117,6 +119,7 @@ async function main() {
     accept: commands.cmdAccept,
     check: commands.cmdCheck,
     build: commands.cmdBuild,
+    review: commands.cmdReview,
   }[command];
   if (!run) fail(`unknown command "${command}". Run uichanges --help`);
   await run(args);

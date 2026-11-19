@@ -156,6 +156,9 @@ export function captureSnapshot(options = {}) {
     if (!isVisible(el, rect)) continue;
 
     const anchor = el.getAttribute('data-uichanges') || null;
+    // Text that shows user data or state ("Группа: не указана"): a change of
+    // its text is not a change of the interface.
+    const dynamic = Boolean(el.closest('[data-uichanges-dynamic]'));
     const testid = el.getAttribute('data-testid') || null;
     const name = nameOf(el);
     const locators = [];
@@ -169,6 +172,7 @@ export function captureSnapshot(options = {}) {
       name,
       anchor,
       testid,
+      ...(dynamic ? { dynamic: true } : {}),
       landmarks: landmarksOf(el),
       box: {
         x: Math.round(rect.left + window.scrollX),

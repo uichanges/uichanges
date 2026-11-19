@@ -17,7 +17,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "test": "node --test",
@@ -45,5 +45,8 @@
     "url": "git+https://github.com/uichanges/uichanges.git"
   },
   "homepage": "https://github.com/uichanges/uichanges#readme",
-  "bugs": "https://github.com/uichanges/uichanges/issues"
+  "bugs": "https://github.com/uichanges/uichanges/issues",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
 }
